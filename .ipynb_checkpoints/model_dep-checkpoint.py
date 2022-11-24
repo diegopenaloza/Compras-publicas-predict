@@ -15,7 +15,7 @@ import importlib
 # from extra_month import extrac_json
 # importlib.reload(scrap_socp)
 # importlib.reload(extra_month)
-from xgboost import plot_importance
+# from xgboost import plot_importance
 
 import requests, zipfile, io
 import requests
