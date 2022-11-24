@@ -187,6 +187,26 @@ def color_tender(val):
 
 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
+st.write('<style>h1,h3{ text-align:center;}</style>', unsafe_allow_html=True)
+
+st.write(
+"""  
+<style>
+/*center metric value*/
+[role="radiogroup"]  {
+    justify-content: center;
+}
+
+.css-81oif8 .effi0qh3{
+    justify-content: center;
+    text-align:center !important; 
+}
+
+
+</style>'
+"""
+, unsafe_allow_html=True)
+
 st.write("""<style>
 div.css-ocqkz7.e1tzin5v4 {
   display: flex  !important;
@@ -297,6 +317,51 @@ display:none;
 
 st.title('Deteción de Posibles  Procesos Desiertos (Demo) ')
 
+
+def optain_predict(ubi,xgb_model=xgb_model,ocid_code=False):
+    try:
+        # ocid_code = st.text_input('Ingrese el codigo OCID del Proceso')
+        df_ocid=predict_df(path=ubi,model=xgb_model,ocid=ocid_code,scrap=False)
+        col1, col2, col3,col4, col5, col6  = st.columns(6)
+        if df_ocid["predict"][0]==1:
+            col1.metric("Predicción", "Desierto",delta="Tendencia")
+            metri_cs=f"""
+                     <style>
+                        {bg_col}
+                        {font_col}
+                        {css_box}
+                        {center_labes}
+                    </style>   
+                    """
+            st.write(metri_cs, unsafe_allow_html=True)
+        else:
+            col1.metric("Predicción", "Normal",delta="Tendencia",)
+            metri_cs=f"""
+                     <style>
+                        {css_box}
+                        {center_labes}
+                    </style>   
+                    """
+            st.write(metri_cs, unsafe_allow_html=True)
+        col2.metric(label="Probabilidad", value=str(round(df_ocid["proba"][0]*100,2))+ "%",delta="de 100 %",)
+        if type(df_ocid["n_of_Tend"][0])!=np.float64:
+            col3.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
+        else:
+            col3.metric(label="Numero de Oferentes", value=df_ocid["n_of_Tend"][0] ,delta="Oferentes",
+            delta_color="off")
+
+        if type(df_ocid["Pre_No_Respu"][0])!=np.float64:
+            col4.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
+        else:
+            col4.metric(label="Preguntas no Respondidas", value=df_ocid["Pre_No_Respu"][0] ,delta="Oferentes",
+            delta_color="off")
+
+        col5.metric(label="Periodo de Adjudicación", value=str(round(df_ocid["awar_perio"][0])),delta="días")
+        col6.metric(label="Periodo de Preguntas", value=str(round(df_ocid["enqui_perio"][0])),delta="días", delta_color="off")
+    except:
+        pass
+
+
 # +
 tipo = st.radio(
     "¿Cual es el tipo de información?",
@@ -333,54 +398,70 @@ elif tipo == 'Ocid':
     rj= requests.get(urlj)
     zj = zipfile.ZipFile(io.BytesIO(rj.content))
     hojasj=zj.namelist()
-    try:
-        # ocid_code = st.text_input('Ingrese el codigo OCID del Proceso')
-        df_ocid=predict_df(path=hojasj[0],model=xgb_model,ocid=ocid_code,scrap=False)
-        col1, col2, col3,col4, col5, col6  = st.columns(6)
-        if df_ocid["predict"][0]==1:
-            col1.metric("Predicción", "Desierto",delta="Tendencia")
-            metri_cs=f"""
-                     <style>
-                        {bg_col}
-                        {font_col}
-                        {css_box}
-                        {center_labes}
-                    </style>   
-                    """
-            st.write(metri_cs, unsafe_allow_html=True)
-        else:
-            col1.metric("Predicción", "Normal",delta="Tendencia",)
-            metri_cs=f"""
-                     <style>
-                        {css_box}
-                        {center_labes}
-                    </style>   
-                    """
-            st.write(metri_cs, unsafe_allow_html=True)
-        col2.metric(label="Probabilidad", value=str(round(df_ocid["proba"][0]*100,2))+ "%",delta="de 100 %",)
-        if type(df_ocid["n_of_Tend"][0])!=np.float64:
-            col3.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
-        else:
-            col3.metric(label="Numero de Oferentes", value=df_ocid["n_of_Tend"][0] ,delta="Oferentes",
-            delta_color="off")
-         
-        if type(df_ocid["Pre_No_Respu"][0])!=np.float64:
-            col4.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
-        else:
-            col4.metric(label="Preguntas no Respondidas", value=df_ocid["Pre_No_Respu"][0] ,delta="Oferentes",
-            delta_color="off")
-        
-        col5.metric(label="Periodo de Adjudicación", value=str(round(df_ocid["awar_perio"][0])),delta="días")
-        col6.metric(label="Periodo de Preguntas", value=str(round(df_ocid["enqui_perio"][0])),delta="días", delta_color="off")
-    except:
-        pass
- 
+    def optain_predict(ubi,xgb_model=xgb_model,ocid=ocid_code):
+        try:
+            # ocid_code = st.text_input('Ingrese el codigo OCID del Proceso')
+            df_ocid=predict_df(path=ubi,model=xgb_model,ocid=ocid_code,scrap=False)
+            col1, col2, col3,col4, col5, col6  = st.columns(6)
+            if df_ocid["predict"][0]==1:
+                col1.metric("Predicción", "Desierto",delta="Tendencia")
+                metri_cs=f"""
+                         <style>
+                            {bg_col}
+                            {font_col}
+                            {css_box}
+                            {center_labes}
+                        </style>   
+                        """
+                st.write(metri_cs, unsafe_allow_html=True)
+            else:
+                col1.metric("Predicción", "Normal",delta="Tendencia",)
+                metri_cs=f"""
+                         <style>
+                            {css_box}
+                            {center_labes}
+                        </style>   
+                        """
+                st.write(metri_cs, unsafe_allow_html=True)
+            col2.metric(label="Probabilidad", value=str(round(df_ocid["proba"][0]*100,2))+ "%",delta="de 100 %",)
+            if type(df_ocid["n_of_Tend"][0])!=np.float64:
+                col3.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
+            else:
+                col3.metric(label="Numero de Oferentes", value=df_ocid["n_of_Tend"][0] ,delta="Oferentes",
+                delta_color="off")
 
-    
+            if type(df_ocid["Pre_No_Respu"][0])!=np.float64:
+                col4.metric(label="Numero de Oferentes", value="Sin Registro",delta="Oferentes",)
+            else:
+                col4.metric(label="Preguntas no Respondidas", value=df_ocid["Pre_No_Respu"][0] ,delta="Oferentes",
+                delta_color="off")
+
+            col5.metric(label="Periodo de Adjudicación", value=str(round(df_ocid["awar_perio"][0])),delta="días")
+            col6.metric(label="Periodo de Preguntas", value=str(round(df_ocid["enqui_perio"][0])),delta="días", delta_color="off")
+        except:
+            pass
+
+
+    optain_predict(hojasj[0])
     
     
 else:
-    st.write("...")
+    try:
+        urljson='https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download?type=json&year=2022&month=11&method=Subasta%20Inversa%20Electr%C3%B3nica'
+        urlj=urljson
+        rj= requests.get(urlj)
+        zj = zipfile.ZipFile(io.BytesIO(rj.content))
+        hojasj=zj.namelist()
+        urljson = st.text_input('Ingrese el link del proceso')
+        cifr="(?<=/)[^/]*$"
+        # txt="https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/ocds/ocds-5wno2w-SIE-15BAE-045-2022-54082"
+        txt=urljson
+        x = re.search(cifr, txt)
+        # print(x[0])
+        optain_predict(hojasj[0],ocid_code=x[0])
+        st.write(x[0])
+    except:
+        pass
 
 # +
 # urljson='https://datosabiertos.compraspublicas.gob.ec/PLATAFORMA/download?type=json&year=2022&month=11&method=Subasta%20Inversa%20Electr%C3%B3nica'
